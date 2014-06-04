@@ -1,0 +1,4 @@
+cover
+=====
+
+Album art manager
