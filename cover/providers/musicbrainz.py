@@ -8,7 +8,7 @@ from cover.image import Image
 
 def build_query(artist, album):
     '''Constructs valid query for the MusicBrainz GET request'''
-    query_part = 'artist:' + quote_plus(artist) + '+recording:' + quote_plus(album)
+    query_part = 'artist:' + quote_plus(artist) + '+release:' + quote_plus(album)
     earl = 'http://www.musicbrainz.org/ws/2/recording/?query='
     return earl + query_part
 
@@ -22,22 +22,20 @@ def with_ns(tag):
     return '{'+ xmlns + '}' + tag
 
 def get_mbids_from_response(response, artist, album):
-    '''Extracts MusicBrainz IDs from response.'''
+    '''Returns a list of 3-tuples with artist, album, and MBID.'''
     tree = ET.parse(response)
     root = tree.getroot()
-
-    # Construct list of recordings
-    recordings = []
-    for recording in root[0]:
-        recordings.append(recording)
-
-    # Extract release ID from list of recordings
     mbids = []
-    for recording in recordings:
-        if recording.find(with_ns('title')).text == album:
-            for each in recording.iter(with_ns('release')):
-                mbids.append(each.attrib['id'])
+    recording_list = root.find(with_ns('recording-list'))
+    for recording in recording_list:
+        if recording.attrib['{http://musicbrainz.org/ns/ext#-2.0}score'] == '100':
+            release_list = recording.find(with_ns('release-list'))
+            for release in release_list:
+                title = release.find(with_ns('title')).text
+                if release.find(with_ns('title')).text == album:
+                    mbids.append(release.attrib['id'])
     return mbids
+
 
 def extract_caa_urls(response):
     '''Extracts image information from JSON CAA response'''
