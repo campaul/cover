@@ -4,6 +4,11 @@ from urllib import request
 from cover.image import Image
 
 def load(artist, album):
+
+    # TODO: Do this the right way
+    if artist == album:
+        album = ''
+
     query = ' '.join([artist, album, 'cover art']).replace(' ', '%20')
     response = request.urlopen('https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=' + query)
     result = json.loads(response.read().decode(encoding='UTF-8'))
