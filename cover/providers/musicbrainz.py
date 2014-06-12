@@ -22,7 +22,7 @@ def with_ns(tag):
     return '{'+ xmlns + '}' + tag
 
 def get_mbids_from_response(response, artist, album):
-    '''Returns a list of 3-tuples with artist, album, and MBID.'''
+    '''Gets MusicBrainz IDs for artist, album from MusicBrainz XML response'''
     tree = ET.parse(response)
     root = tree.getroot()
     mbids = []
